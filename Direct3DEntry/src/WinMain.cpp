@@ -1,12 +1,41 @@
 #include <Windows.h>
-
+#include "WindowsMessageMap.h"
+#include <sstream>
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	static WindowsMessageMap mm;
+	OutputDebugStringA(mm(msg, lParam, wParam).c_str());
+
 	switch (msg)
 	{
 	case WM_CLOSE:
 		PostQuitMessage(2137);
+		break;
+	case WM_KEYDOWN:
+		if (wParam == 'F')
+		{
+			SetWindowText(hWnd, L"Revengeance ");
+		}
+		break;
+	case WM_KEYUP:
+		if (wParam == 'F')
+		{
+			SetWindowText(hWnd, L"Malignance");
+		}
+		break;
+	case WM_CHAR:
+	{
+		static std::wstring title;
+		title.push_back((wchar_t)wParam);
+		SetWindowText(hWnd, title.c_str());
+		break;
+	}
+	case WM_LBUTTONDOWN:
+		POINTS pt = MAKEPOINTS(lParam);
+		std::wstringstream wss{};
+		wss << "X: " << pt.x << ", Y: " << pt.y;
+		SetWindowText(hWnd, wss.str().c_str());
 		break;
 	}
 
